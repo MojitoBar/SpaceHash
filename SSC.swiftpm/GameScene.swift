@@ -32,7 +32,7 @@ struct PlayerPos {
 // 0  1  2
 // 1  x  x
 // 2  x  x
-var playerPos = PlayerPos(index: (1, 1), pos: (0, 0), isMove: false)
+var playerPos = PlayerPos(index: (0, 0), pos: (0, 0), isMove: false)
 
 
 class GameScene: SKScene, SKPhysicsContactDelegate {
@@ -158,32 +158,51 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
                 // 우 라는 뜻
                 if abs(difference.x) > 50 {
                     if difference.x < 0 {
-                        moveGoodGuy(pos: CGPoint(x: playerPos.pos.0 + 80, y: playerPos.pos.1))
-                        playerPos.pos = (playerPos.pos.0 + 80, playerPos.pos.1)
+                        if checkPossible(player: playerPos, go: (1, 0)) {
+                            moveGoodGuy(pos: CGPoint(x: playerPos.pos.0 + 80, y: playerPos.pos.1))
+                            playerPos.pos = (playerPos.pos.0 + 80, playerPos.pos.1)
+                            playerPos.index = (playerPos.index.0 + 1, playerPos.index.1)
+                        }
                     }
                     // 좌 라는 뜻
                     else {
-                        moveGoodGuy(pos: CGPoint(x: playerPos.pos.0 - 80, y: playerPos.pos.1))
-                        playerPos.pos = (playerPos.pos.0 - 80, playerPos.pos.1)
+                        if checkPossible(player: playerPos, go: (-1, 0)) {
+                            moveGoodGuy(pos: CGPoint(x: playerPos.pos.0 - 80, y: playerPos.pos.1))
+                            playerPos.pos = (playerPos.pos.0 - 80, playerPos.pos.1)
+                            playerPos.index = (playerPos.index.0 - 1, playerPos.index.1)
+                        }
                     }
                 }
             }
             // 상, 하 둘 중 하나라는 뜻
             else {
                 if abs(difference.y) > 50 {
-                    // 하 라는 뜻
-                    if difference.y < 0 {
-                        moveGoodGuy(pos: CGPoint(x: playerPos.pos.0, y: playerPos.pos.1 + 80))
-                        playerPos.pos = (playerPos.pos.0, playerPos.pos.1 + 80)
-                    }
                     // 상 라는 뜻
+                    if difference.y < 0 {
+                        if checkPossible(player: playerPos, go: (0, 1)) {
+                            moveGoodGuy(pos: CGPoint(x: playerPos.pos.0, y: playerPos.pos.1 + 80))
+                            playerPos.pos = (playerPos.pos.0, playerPos.pos.1 + 80)
+                            playerPos.index = (playerPos.index.0, playerPos.index.1 + 1)
+                        }
+                    }
+                    // 하 라는 뜻
                     else {
-                        moveGoodGuy(pos: CGPoint(x: playerPos.pos.0, y: playerPos.pos.1 - 80))
-                        playerPos.pos = (playerPos.pos.0, playerPos.pos.1 - 80)
+                        if checkPossible(player: playerPos, go: (0, -1)) {
+                            moveGoodGuy(pos: CGPoint(x: playerPos.pos.0, y: playerPos.pos.1 - 80))
+                            playerPos.pos = (playerPos.pos.0, playerPos.pos.1 - 80)
+                            playerPos.index = (playerPos.index.0, playerPos.index.1 - 1)
+                        }
                     }
                 }
             }
         }
+    }
+    
+    func checkPossible(player: PlayerPos, go: (Int, Int)) -> Bool {
+        if playerPos.index.0 + go.0 > -2 && playerPos.index.0 + go.0 < 2 && playerPos.index.1 + go.1 > -2 && playerPos.index.1 + go.1 < 2 {
+            return true
+        }
+        return false
     }
     
     func heroDidCollideWithBaddy(hero: SKSpriteNode, baddy: SKSpriteNode) {
