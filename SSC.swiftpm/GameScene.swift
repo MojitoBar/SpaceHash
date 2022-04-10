@@ -19,8 +19,6 @@ struct PhysicsCategory {
 
 struct CheckDrag {
     var movableNode: CGPoint
-    // 0, 1, 2, 3
-    // 상, 하, 좌, 우
     var dragDirection: Int
 }
 
@@ -29,11 +27,8 @@ struct PlayerPos {
     var pos: (CGFloat, CGFloat)
     var isMove: Bool
 }
-// 0  1  2
-// 1  x  x
-// 2  x  x
-var playerPos = PlayerPos(index: (0, 0), pos: (0, 0), isMove: false)
 
+var playerPos = PlayerPos(index: (0, 0), pos: (0, 0), isMove: false)
 
 class GameScene: SKScene, SKPhysicsContactDelegate {
     var background = SKSpriteNode(imageNamed: "city")
@@ -43,25 +38,6 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     let scoreIncrement = 10
     var lblScore = SKLabelNode()
     var lblTitle = SKLabelNode()
-    
-    func initLabels() {
-        lblScore.name = "lblScore"
-        lblScore.text = "Score: "
-        lblScore.fontSize = 64
-        lblScore.fontColor = .red
-        lblScore.position = CGPoint(x: 200, y: 200)
-        lblScore.zPosition = 11
-        addChild(lblScore)
-        
-        lblTitle.name = "lblTitle"
-        lblTitle.text = "My Game"
-        lblTitle.fontSize = 64
-        lblTitle.fontColor = .red
-        lblTitle.position = CGPoint(x: 500, y: 500)
-        lblTitle.zPosition = 11
-        addChild(lblTitle)
-        
-    }
     
     override func didMove(to view: SKView) {
         initLabels()
@@ -89,56 +65,13 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         sportNode?.physicsBody?.collisionBitMask = PhysicsCategory.None
         sportNode?.physicsBody?.usesPreciseCollisionDetection = true
         
-        run(SKAction.repeatForever(SKAction.sequence([SKAction.run(addBaddy), SKAction.wait(forDuration: 0.5)])))
+        run(SKAction.repeatForever(SKAction.sequence([SKAction.run(addBaddy), SKAction.wait(forDuration: 1)])))
         
         score = 0
         lblScore.text = "Score: \(score!)"
         
         lblScore.alpha = 0.0
         lblScore.run(SKAction.fadeIn(withDuration: 2.0))
-    }
-    
-    func random() -> CGFloat {
-        return CGFloat(Float(arc4random()) / 0xFFFFFFFF)
-    }
-    
-    func random(min: CGFloat, max: CGFloat) -> CGFloat {
-        return random() * (max - min) + min
-    }
-    
-    func addBaddy() {
-        let baddy = SKSpriteNode(imageNamed: "pika")
-        baddy.size = CGSize(width: 40, height: 40)
-        baddy.color = .red
-        baddy.xScale = baddy.xScale * -1
-        
-        let actualY = random(min: baddy.size.height / 2, max: size.height - baddy.size.height / 2)
-        
-        baddy.position = CGPoint(x: size.width + baddy.size.width / 2, y: actualY)
-        
-        addChild(baddy)
-        
-        baddy.physicsBody = SKPhysicsBody(rectangleOf: baddy.size)
-        baddy.physicsBody?.isDynamic = true
-        baddy.physicsBody?.categoryBitMask = PhysicsCategory.Baddy
-        baddy.physicsBody?.contactTestBitMask = PhysicsCategory.Hero
-        baddy.physicsBody?.collisionBitMask = PhysicsCategory.None
-        
-        let actualDuration = random(min: CGFloat(2.0), max: CGFloat(4.0))
-        
-        let actionMove = SKAction.move(to: CGPoint(x: -baddy.size.width / 2, y: actualY), duration: TimeInterval(actualDuration))
-        let actionMoveDone = SKAction.removeFromParent()
-        
-        baddy.run(SKAction.sequence([actionMove, actionMoveDone]))
-    }
-    
-    func moveGoodGuy(pos: CGPoint) {
-        playerPos.isMove = true
-        let actionMove = SKAction.move(to: pos, duration: TimeInterval(0.4))
-        let actionMoveDone = SKAction.run {
-            playerPos.isMove = false
-        }
-        sportNode?.run(SKAction.sequence([actionMove, actionMoveDone]))
     }
     
     var drag = CheckDrag(movableNode: CGPoint.zero, dragDirection: -1)
@@ -198,21 +131,17 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         }
     }
     
-    func checkPossible(player: PlayerPos, go: (Int, Int)) -> Bool {
-        if playerPos.index.0 + go.0 > -2 && playerPos.index.0 + go.0 < 2 && playerPos.index.1 + go.1 > -2 && playerPos.index.1 + go.1 < 2 {
-            return true
-        }
-        return false
-    }
     
+    
+    // 충돌 시 점수 로직
     func heroDidCollideWithBaddy(hero: SKSpriteNode, baddy: SKSpriteNode) {
-        
         score = score! + scoreIncrement
         lblScore.text = "Score: \(score!)"
         lblScore.alpha = 0.0
         lblScore.run(SKAction.fadeIn(withDuration: 2.0))
     }
     
+    // 충돌 체크
     func didBegin(_ contact: SKPhysicsContact) {
         var firstBody: SKPhysicsBody
         var secondBody: SKPhysicsBody
