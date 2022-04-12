@@ -7,6 +7,7 @@
 
 import Foundation
 import GameplayKit
+import SwiftUI
 
 struct PhysicsCategory {
     static let None: UInt32 = 0
@@ -31,13 +32,15 @@ struct PlayerPos {
 
 var playerPos = PlayerPos(index: (0, 0), pos: (0, 0), isMove: false)
 
-class GameScene: SKScene, SKPhysicsContactDelegate {
+class GameScene: SKScene, SKPhysicsContactDelegate, ObservableObject {
+    @Published var gameOver: Bool = false
+    @Published var score: Int = 0
+    
     var background = SKSpriteNode(imageNamed: "background")
     var grid = SKSpriteNode(imageNamed: "grid")
     var sportNode: SKSpriteNode?
     let coin = SKSpriteNode(imageNamed: "coin")
     
-    var score: Int?
     let scoreIncrement = 10
     var heart: [SKSpriteNode] = [SKSpriteNode(imageNamed: "heart"), SKSpriteNode(imageNamed: "heart"), SKSpriteNode(imageNamed: "heart")]
     var heartCount: Int = 3
@@ -45,6 +48,8 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     
     var coinPosition: [(CGFloat, CGFloat)]?
     override func didMove(to view: SKView) {
+        playerPos = PlayerPos(index: (0, 0), pos: (0, 0), isMove: false)
+        
         coinPosition = [
             (frame.size.width / 2, frame.size.height / 2),
             (frame.size.width / 2, frame.size.height / 2 + 80),
@@ -161,10 +166,13 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     
     // 충돌 시 점수 로직
     func heroDidCollideWithBaddy(hero: SKSpriteNode, baddy: SKSpriteNode) {
-        score = score! + scoreIncrement
         if heartCount > 0 {
             heartCount -= 1
             heart[heartCount].run(SKAction.sequence([SKAction.resize(toWidth: 0, duration: 0), SKAction.resize(toHeight: 0, duration: 0)]))
+        }
+        else {
+            gameOver = true
+            self.speed = 0
         }
     }
     
@@ -190,6 +198,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         if firstBody.categoryBitMask == PhysicsCategory.Hero && secondBody.categoryBitMask == PhysicsCategory.coin {
             print("coin 먹음")
             changeCoinPosition(index: coinIndex)
+            score += 100
         }
     }
 }
