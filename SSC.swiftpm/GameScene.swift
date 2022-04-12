@@ -31,25 +31,28 @@ struct PlayerPos {
 var playerPos = PlayerPos(index: (0, 0), pos: (0, 0), isMove: false)
 
 class GameScene: SKScene, SKPhysicsContactDelegate {
-    var background = SKSpriteNode(imageNamed: "city")
+    var background = SKSpriteNode(imageNamed: "background")
+    var grid = SKSpriteNode(imageNamed: "grid")
     var sportNode: SKSpriteNode?
     
     var score: Int?
     let scoreIncrement = 10
-    var lblScore = SKLabelNode()
-    var lblTitle = SKLabelNode()
+    var heart: [SKSpriteNode] = [SKSpriteNode(imageNamed: "heart"), SKSpriteNode(imageNamed: "heart"), SKSpriteNode(imageNamed: "heart")]
+    var heartCount: Int = 3
     
     override func didMove(to view: SKView) {
         initLabels()
         
         background.position = CGPoint(x: frame.size.width / 2, y: frame.size.height / 2)
-        background.alpha = 0.3
+        background.size = CGSize(width: frame.size.width, height: frame.size.height)
+        background.alpha = 1
         addChild(background)
         
-        lblTitle.alpha = 0.0
-        lblTitle.run(SKAction.fadeIn(withDuration: 2.0))
+        grid.position = CGPoint(x: frame.size.width / 2, y: frame.size.height / 2)
+        grid.size = CGSize(width: 210, height: 210)
+        addChild(grid)
         
-        sportNode = SKSpriteNode(imageNamed: "pika")
+        sportNode = SKSpriteNode(imageNamed: "earth")
         sportNode?.position = CGPoint(x: frame.size.width / 2, y: frame.size.height / 2)
         playerPos.pos = (sportNode!.position.x, sportNode!.position.y)
         sportNode?.size = CGSize(width: 50, height: 50)
@@ -67,11 +70,17 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         
         run(SKAction.repeatForever(SKAction.sequence([SKAction.run(addBaddy), SKAction.wait(forDuration: 1)])))
         
+        initHeart()
         score = 0
-        lblScore.text = "Score: \(score!)"
-        
-        lblScore.alpha = 0.0
-        lblScore.run(SKAction.fadeIn(withDuration: 2.0))
+    }
+    
+    func initHeart() {
+        for i in 0..<heartCount {
+            heart[i].size = CGSize(width: 25, height: 23)
+            heart[i].position = CGPoint(x: CGFloat(i * 40 + 50), y: frame.size.height - 80)
+            
+            addChild(heart[i])
+        }
     }
     
     var drag = CheckDrag(movableNode: CGPoint.zero, dragDirection: -1)
@@ -136,9 +145,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     // 충돌 시 점수 로직
     func heroDidCollideWithBaddy(hero: SKSpriteNode, baddy: SKSpriteNode) {
         score = score! + scoreIncrement
-        lblScore.text = "Score: \(score!)"
-        lblScore.alpha = 0.0
-        lblScore.run(SKAction.fadeIn(withDuration: 2.0))
+        heartCount -= 1
     }
     
     // 충돌 체크
