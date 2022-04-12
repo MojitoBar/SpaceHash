@@ -162,7 +162,10 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     // 충돌 시 점수 로직
     func heroDidCollideWithBaddy(hero: SKSpriteNode, baddy: SKSpriteNode) {
         score = score! + scoreIncrement
-        heartCount -= 1
+        if heartCount > 0 {
+            heartCount -= 1
+            heart[heartCount].run(SKAction.sequence([SKAction.resize(toWidth: 0, duration: 0), SKAction.resize(toHeight: 0, duration: 0)]))
+        }
     }
     
     // 충돌 체크
