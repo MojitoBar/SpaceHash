@@ -11,8 +11,9 @@ import GameplayKit
 struct PhysicsCategory {
     static let None: UInt32 = 0
     static let All: UInt32 = UInt32.max
-    static let Baddy: UInt32 = 0b1
-    static let Hero: UInt32 = 0b10
+    static let Baddy: UInt32 = 0x1 << 0
+    static let Hero: UInt32 = 0x1 << 1
+    static let coin: UInt32 = 0x1 << 2
     
     static let Projectile: UInt32 = 0b11
 }
@@ -34,13 +35,28 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     var background = SKSpriteNode(imageNamed: "background")
     var grid = SKSpriteNode(imageNamed: "grid")
     var sportNode: SKSpriteNode?
+    let coin = SKSpriteNode(imageNamed: "coin")
     
     var score: Int?
     let scoreIncrement = 10
     var heart: [SKSpriteNode] = [SKSpriteNode(imageNamed: "heart"), SKSpriteNode(imageNamed: "heart"), SKSpriteNode(imageNamed: "heart")]
     var heartCount: Int = 3
+    var coinIndex = 0
     
+    var coinPosition: [(CGFloat, CGFloat)]?
     override func didMove(to view: SKView) {
+        coinPosition = [
+            (frame.size.width / 2, frame.size.height / 2),
+            (frame.size.width / 2, frame.size.height / 2 + 80),
+            (frame.size.width / 2, frame.size.height / 2 - 80),
+            (frame.size.width / 2 + 80, frame.size.height / 2),
+            (frame.size.width / 2 - 80, frame.size.height / 2),
+            (frame.size.width / 2 + 80, frame.size.height / 2 + 80),
+            (frame.size.width / 2 - 80, frame.size.height / 2 - 80),
+            (frame.size.width / 2 + 80, frame.size.height / 2 - 80),
+            (frame.size.width / 2 - 80, frame.size.height / 2 + 80)
+        ]
+        
         initLabels()
         
         background.position = CGPoint(x: frame.size.width / 2, y: frame.size.height / 2)
@@ -64,13 +80,14 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         sportNode?.physicsBody = SKPhysicsBody(circleOfRadius: (sportNode?.size.width)! / 2)
         sportNode?.physicsBody?.isDynamic = true
         sportNode?.physicsBody?.categoryBitMask = PhysicsCategory.Hero
-        sportNode?.physicsBody?.contactTestBitMask = PhysicsCategory.Baddy
+        sportNode?.physicsBody?.contactTestBitMask = PhysicsCategory.coin | PhysicsCategory.Baddy
         sportNode?.physicsBody?.collisionBitMask = PhysicsCategory.None
         sportNode?.physicsBody?.usesPreciseCollisionDetection = true
         
         run(SKAction.repeatForever(SKAction.sequence([SKAction.run(addBaddy), SKAction.wait(forDuration: 1)])))
         
         initHeart()
+        createCoin(index: 0)
         score = 0
     }
     
@@ -165,6 +182,11 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         if ((firstBody.categoryBitMask & PhysicsCategory.Baddy != 0) &&
             (secondBody.categoryBitMask & PhysicsCategory.Hero != 0)) {
             heroDidCollideWithBaddy(hero: firstBody.node as! SKSpriteNode, baddy: secondBody.node as! SKSpriteNode)
+            print("충돌")
+        }
+        if firstBody.categoryBitMask == PhysicsCategory.Hero && secondBody.categoryBitMask == PhysicsCategory.coin {
+            print("coin 먹음")
+            changeCoinPosition(index: coinIndex)
         }
     }
 }
