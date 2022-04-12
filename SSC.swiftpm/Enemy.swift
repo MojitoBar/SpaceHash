@@ -51,7 +51,7 @@ extension GameScene {
             (mid.0 + 500, mid.1 - 80)
         ]
         
-        let baddy = SKSpriteNode(imageNamed: "pika")
+        let baddy = SKSpriteNode(imageNamed: "moon")
         baddy.size = CGSize(width: 40, height: 40)
         baddy.color = .red
         baddy.xScale = baddy.xScale * -1
