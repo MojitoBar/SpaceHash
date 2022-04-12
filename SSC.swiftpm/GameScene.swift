@@ -40,6 +40,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate, ObservableObject {
     var grid = SKSpriteNode(imageNamed: "grid")
     var sportNode: SKSpriteNode?
     let coin = SKSpriteNode(imageNamed: "coin")
+    var scoreLabel: SKLabelNode?
     
     let scoreIncrement = 10
     var heart: [SKSpriteNode] = [SKSpriteNode(imageNamed: "heart"), SKSpriteNode(imageNamed: "heart"), SKSpriteNode(imageNamed: "heart")]
@@ -199,6 +200,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate, ObservableObject {
             print("coin 먹음")
             changeCoinPosition(index: coinIndex)
             score += 100
+            scoreLabel?.text = "SCORE: \(score)"
         }
     }
 }
