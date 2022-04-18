@@ -22,3 +22,4 @@ It is a game to save the Earth by avoiding meteorites in space.
 ## Avoid the meteorite as long as possible and save the planet!!
 
 ### Screenshot
+![screenshot](https://github.com/MojitoBar/SpaceHash/blob/main/screenshot.gif)
