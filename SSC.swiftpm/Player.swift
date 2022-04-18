@@ -26,4 +26,8 @@ extension GameScene {
         }
         sportNode?.run(SKAction.sequence([actionMove, actionMoveDone]))
     }
+    
+    func rotationPlayer(){
+        sportNode?.run(SKAction.rotate(byAngle: 10, duration: 2))
+    }
 }
