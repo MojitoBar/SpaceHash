@@ -60,7 +60,6 @@ extension GameScene {
         
         baddy.position = CGPoint(x: startPos[index].0, y: startPos[index].1)
         addChild(baddy)
-        print(baddy.position)
         
         baddy.physicsBody = SKPhysicsBody(rectangleOf: baddy.size)
         baddy.physicsBody?.isDynamic = true

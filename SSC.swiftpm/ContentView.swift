@@ -10,6 +10,7 @@ struct ContentView: View {
         scene.speed = 1
         return scene
     }()
+    
     @Binding var start: Bool
     var body: some View {
         ZStack {
@@ -22,7 +23,10 @@ struct ContentView: View {
                         Button {
                             start = false
                         } label: {
-                            Text("SCORE: \(scene.score)")
+                            VStack {
+                                Text("MAX SCORE: \(userDefaults.integer(forKey: "maxValue"))")
+                                Text("SCORE: \(scene.score)")
+                            }
                         }
                     }
                     .frame(width: 200, height: 400, alignment: .center)

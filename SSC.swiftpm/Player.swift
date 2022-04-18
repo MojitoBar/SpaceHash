@@ -20,7 +20,7 @@ extension GameScene {
     // 플레이어 Move함수
     func moveGoodGuy(pos: CGPoint) {
         playerPos.isMove = true
-        let actionMove = SKAction.move(to: pos, duration: TimeInterval(0.4))
+        let actionMove = SKAction.move(to: pos, duration: TimeInterval(0.3))
         let actionMoveDone = SKAction.run {
             playerPos.isMove = false
         }
