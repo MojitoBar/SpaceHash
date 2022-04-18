@@ -7,6 +7,7 @@
 
 import Foundation
 import GameplayKit
+import AVFoundation
 import SwiftUI
 
 struct PhysicsCategory {
@@ -42,6 +43,8 @@ class GameScene: SKScene, SKPhysicsContactDelegate, ObservableObject {
     var sportNode: SKSpriteNode?
     let coin = SKSpriteNode(imageNamed: "coin")
     var scoreLabel: SKLabelNode?
+    var sound = SKAction.playSoundFileNamed("BGM.mp3", waitForCompletion: false)
+    var player: AVAudioPlayer!
     
     let scoreIncrement = 10
     var heart: [SKSpriteNode] = [SKSpriteNode(imageNamed: "heart"), SKSpriteNode(imageNamed: "heart"), SKSpriteNode(imageNamed: "heart")]
@@ -49,9 +52,32 @@ class GameScene: SKScene, SKPhysicsContactDelegate, ObservableObject {
     var coinIndex = 0
     
     var coinPosition: [(CGFloat, CGFloat)]?
+    
+    func playSound() {
+        guard let url = Bundle.main.url(forResource: "BGM", withExtension: "mp3") else { return }
+
+        do {
+            try AVAudioSession.sharedInstance().setCategory(.playback, mode: .default)
+            try AVAudioSession.sharedInstance().setActive(true)
+
+            /* The following line is required for the player to work on iOS 11. Change the file type accordingly*/
+            player = try AVAudioPlayer(contentsOf: url, fileTypeHint: AVFileType.mp3.rawValue)
+
+            /* iOS 10 and earlier require the following line:
+            player = try AVAudioPlayer(contentsOf: url, fileTypeHint: AVFileTypeMPEGLayer3) */
+
+            guard let player = player else { return }
+
+            player.play()
+
+        } catch let error {
+            print(error.localizedDescription)
+        }
+    }
+    
     override func didMove(to view: SKView) {
+        playSound()
         playerPos = PlayerPos(index: (0, 0), pos: (0, 0), isMove: false)
-        
         coinPosition = [
             (frame.size.width / 2, frame.size.height / 2),
             (frame.size.width / 2, frame.size.height / 2 + 80),
@@ -91,11 +117,15 @@ class GameScene: SKScene, SKPhysicsContactDelegate, ObservableObject {
         sportNode?.physicsBody?.usesPreciseCollisionDetection = true
         
         run(SKAction.repeatForever(SKAction.sequence([SKAction.run(addBaddy), SKAction.wait(forDuration: 1)])))
-        
         run(SKAction.repeatForever(SKAction.sequence([SKAction.run(rotationPlayer), SKAction.wait(forDuration: 2)])))
+//        playSound(sound: sound)
         initHeart()
         createCoin(index: 0)
         score = 0
+    }
+    
+    func playSound(sound : SKAction){
+        run(sound, withKey: "BGM")
     }
     
     func initHeart() {
@@ -169,9 +199,12 @@ class GameScene: SKScene, SKPhysicsContactDelegate, ObservableObject {
         if heartCount > 1 {
             heartCount -= 1
             heart[heartCount].run(SKAction.sequence([SKAction.resize(toWidth: 0, duration: 0), SKAction.resize(toHeight: 0, duration: 0)]))
+            run(SKAction.playSoundFileNamed("boom", waitForCompletion: false))
         }
         else {
             heartCount -= 1
+            
+            run(SKAction.playSoundFileNamed("boom", waitForCompletion: false))
             heart[heartCount].run(SKAction.sequence([SKAction.resize(toWidth: 0, duration: 0), SKAction.resize(toHeight: 0, duration: 0), SKAction.run { [self] in
                 gameOver = true
                 if userDefaults.integer(forKey: "maxValue") < score {
@@ -179,8 +212,8 @@ class GameScene: SKScene, SKPhysicsContactDelegate, ObservableObject {
                 }
                 print(userDefaults.integer(forKey: "maxValue"))
                 self.speed = 0
+                player.stop()
             }]))
-            
         }
     }
     
