@@ -20,21 +20,34 @@ struct ContentView: View {
             if scene.gameOver {
                 VStack {
                     VStack {
+                        Spacer()
+                        Text("SCORE")
+                            .font(Font.system(size: 18, weight: .bold, design: .default))
+                        Text("\(scene.score)")
+                            .font(Font.system(size: 20, weight: .bold, design: .default))
+                        
+                        Spacer()
+                        Text("BEST")
+                            .font(Font.system(size: 18, weight: .bold, design: .default))
+                        Text("\(userDefaults.integer(forKey: "maxValue"))")
+                            .font(Font.system(size: 20, weight: .bold, design: .default))
+                        
+                        Spacer()
                         Button {
                             start = false
                         } label: {
-                            VStack {
-                                Text("MAX SCORE: \(userDefaults.integer(forKey: "maxValue"))")
-                                Text("SCORE: \(scene.score)")
-                            }
+                            Text("RETRY")
+                                .font(Font.system(size: 25, weight: .bold, design: .default))
                         }
+                        Spacer()
                     }
-                    .frame(width: 200, height: 400, alignment: .center)
-                    .background(.white)
-                    .cornerRadius(16)
+                    .foregroundColor(.white)
+                    .frame(width: 200, height: 350, alignment: .center)
+                    .background(Color.init(.sRGB, red: 0, green: 0, blue: 0, opacity: 0.7))
+                    .cornerRadius(8)
                 }
                 .frame(width: UIScreen.main.bounds.width, height: UIScreen.main.bounds.height, alignment: .center)
-                .background(Color.init(red: 1, green: 1, blue: 1, opacity: 0.3))
+                .background(Color.init(red: 1, green: 1, blue: 1, opacity: 0.1))
             }
         }
     }

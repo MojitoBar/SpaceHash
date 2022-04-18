@@ -165,17 +165,21 @@ class GameScene: SKScene, SKPhysicsContactDelegate, ObservableObject {
     
     // 충돌 시 점수 로직
     func heroDidCollideWithBaddy(hero: SKSpriteNode, baddy: SKSpriteNode) {
-        if heartCount > 0 {
+        if heartCount > 1 {
             heartCount -= 1
             heart[heartCount].run(SKAction.sequence([SKAction.resize(toWidth: 0, duration: 0), SKAction.resize(toHeight: 0, duration: 0)]))
         }
         else {
-            gameOver = true
-            if userDefaults.integer(forKey: "maxValue") < score {
-                userDefaults.set(score, forKey: "maxValue")
-            }
-            print(userDefaults.integer(forKey: "maxValue"))
-            self.speed = 0
+            heartCount -= 1
+            heart[heartCount].run(SKAction.sequence([SKAction.resize(toWidth: 0, duration: 0), SKAction.resize(toHeight: 0, duration: 0), SKAction.run { [self] in
+                gameOver = true
+                if userDefaults.integer(forKey: "maxValue") < score {
+                    userDefaults.set(score, forKey: "maxValue")
+                }
+                print(userDefaults.integer(forKey: "maxValue"))
+                self.speed = 0
+            }]))
+            
         }
     }
     
