@@ -131,7 +131,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate, ObservableObject {
     func initHeart() {
         for i in 0..<heartCount {
             heart[i].size = CGSize(width: 25, height: 23)
-            heart[i].position = CGPoint(x: CGFloat(i * 40 + 50), y: frame.size.height - 80)
+            heart[i].position = CGPoint(x: 40 + (30 * i), y: Int(frame.size.height) - 80)
             
             addChild(heart[i])
         }

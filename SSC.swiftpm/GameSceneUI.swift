@@ -17,7 +17,7 @@ extension GameScene {
         scoreLabel?.fontName = "Courier-Bold"
         scoreLabel?.horizontalAlignmentMode = .right
         scoreLabel?.fontColor = .white
-        scoreLabel?.position = CGPoint(x: 350, y: frame.size.height - 80)
+        scoreLabel?.position = CGPoint(x: frame.size.width - 80, y: frame.size.height - 80)
         scoreLabel?.zPosition = 20
         
         scoreLabel?.run(SKAction.repeatForever(SKAction.sequence([SKAction.run { [self] in
