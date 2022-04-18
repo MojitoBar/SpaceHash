@@ -70,6 +70,9 @@ extension GameScene {
         let actionMove = SKAction.move(to: CGPoint(x: endPos[index].0, y: endPos[index].1), duration: TimeInterval(4))
         let actionMoveDone = SKAction.removeFromParent()
         
+        
         baddy.run(SKAction.sequence([actionMove, actionMoveDone]))
+        
+        baddy.run(SKAction.repeatForever(SKAction.sequence([SKAction.run{ baddy.run(SKAction.rotate(byAngle: 10, duration: 2)) }, SKAction.wait(forDuration: 2)])))
     }
 }

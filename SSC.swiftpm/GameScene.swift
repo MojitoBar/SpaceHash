@@ -38,7 +38,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate, ObservableObject {
     @Published var score: Int = 0
     
     var background = SKSpriteNode(imageNamed: "background")
-    var grid = SKSpriteNode(imageNamed: "grid")
+    var grid = SKSpriteNode(imageNamed: "grid2")
     var sportNode: SKSpriteNode?
     let coin = SKSpriteNode(imageNamed: "coin")
     var scoreLabel: SKLabelNode?
@@ -92,6 +92,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate, ObservableObject {
         
         run(SKAction.repeatForever(SKAction.sequence([SKAction.run(addBaddy), SKAction.wait(forDuration: 1)])))
         
+        run(SKAction.repeatForever(SKAction.sequence([SKAction.run(rotationPlayer), SKAction.wait(forDuration: 2)])))
         initHeart()
         createCoin(index: 0)
         score = 0
