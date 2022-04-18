@@ -30,6 +30,7 @@ struct PlayerPos {
     var isMove: Bool
 }
 
+let userDefaults = UserDefaults.standard
 var playerPos = PlayerPos(index: (0, 0), pos: (0, 0), isMove: false)
 
 class GameScene: SKScene, SKPhysicsContactDelegate, ObservableObject {
@@ -67,7 +68,6 @@ class GameScene: SKScene, SKPhysicsContactDelegate, ObservableObject {
         
         background.position = CGPoint(x: frame.size.width / 2, y: frame.size.height / 2)
         background.size = CGSize(width: frame.size.width, height: frame.size.height)
-        background.alpha = 1
         addChild(background)
         
         grid.position = CGPoint(x: frame.size.width / 2, y: frame.size.height / 2)
@@ -163,8 +163,6 @@ class GameScene: SKScene, SKPhysicsContactDelegate, ObservableObject {
         }
     }
     
-    
-    
     // 충돌 시 점수 로직
     func heroDidCollideWithBaddy(hero: SKSpriteNode, baddy: SKSpriteNode) {
         if heartCount > 0 {
@@ -173,6 +171,10 @@ class GameScene: SKScene, SKPhysicsContactDelegate, ObservableObject {
         }
         else {
             gameOver = true
+            if userDefaults.integer(forKey: "maxValue") < score {
+                userDefaults.set(score, forKey: "maxValue")
+            }
+            print(userDefaults.integer(forKey: "maxValue"))
             self.speed = 0
         }
     }
@@ -194,10 +196,8 @@ class GameScene: SKScene, SKPhysicsContactDelegate, ObservableObject {
         if ((firstBody.categoryBitMask & PhysicsCategory.Baddy != 0) &&
             (secondBody.categoryBitMask & PhysicsCategory.Hero != 0)) {
             heroDidCollideWithBaddy(hero: firstBody.node as! SKSpriteNode, baddy: secondBody.node as! SKSpriteNode)
-            print("충돌")
         }
         if firstBody.categoryBitMask == PhysicsCategory.Hero && secondBody.categoryBitMask == PhysicsCategory.coin {
-            print("coin 먹음")
             changeCoinPosition(index: coinIndex)
             score += 100
             scoreLabel?.text = "SCORE: \(score)"
