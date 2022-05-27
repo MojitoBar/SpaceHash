@@ -1,6 +1,6 @@
 # SpaceHash
 
-## WWDC Swift Student Challenge submission
+## WWDC Swift Student Challenge submission - [Accecpted 🎉]
 
 The challenge was:
 
